@@ -5,13 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>머니블랙박스 (MONEY BLACKBOX)</title>
     
+    <script>
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            document.body.innerHTML = `
+                <div style="padding: 20px; background: #fee; color: red; font-family: sans-serif;">
+                    <h2>⚠️ 오류가 발생했습니다</h2>
+                    <p><strong>내용:</strong> ${msg}</p>
+                    <p><strong>위치:</strong> ${lineNo}번째 줄</p>
+                    <p>화면 캡쳐해서 알려주시면 바로 해결해드릴게요!</p>
+                </div>
+            `;
+            return false;
+        };
+    </script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
     <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css">
-    
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
     <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -38,14 +53,22 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        // 1. 안전한 변수 가져오기 (충돌 방지)
         const { useState, useEffect, useRef } = React;
-        // [수정 포인트 1] FramerMotion 변수 접근 방식 변경 (안전하게 window 객체 확인)
-        const { motion, AnimatePresence, useInView } = window.Motion; 
+        
+        // Framer Motion 안전하게 로딩 (window.Motion이 없으면 에러 대신 빈 객체 반환)
+        const MotionLib = window.Motion || window.FramerMotion;
+        if (!MotionLib) throw new Error("애니메이션 라이브러리(Framer Motion) 로딩 실패");
+        const { motion, AnimatePresence, useInView } = MotionLib;
 
-        // Supabase Initialization
+        // Supabase 안전하게 로딩
+        const SupabaseLib = window.supabase || window.Supabase;
+        if (!SupabaseLib) throw new Error("데이터베이스(Supabase) 라이브러리 로딩 실패");
+        
+        // 2. 앱 설정
         const supabaseUrl = 'https://iiuxqifppjuwracdewrn.supabase.co';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpdXhxaWZwcGp1d3JhY2Rld3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1Njk0MTQsImV4cCI6MjA4MjE0NTQxNH0.d53vLqEcBhgsSU19EhkM8D1cs2_ne6UpYQ-xbnU4Zvw';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        const supabaseClient = SupabaseLib.createClient(supabaseUrl, supabaseAnonKey);
 
         const App = () => {
             const [regCount, setRegCount] = useState(0);
@@ -67,8 +90,8 @@
             }, []);
 
             useEffect(() => {
-                // Lucide 아이콘 렌더링 (DOM 업데이트 후 실행)
-                lucide.createIcons();
+                // 아이콘 로딩 안전장치
+                if (window.lucide) window.lucide.createIcons();
             });
 
             useEffect(() => {
@@ -156,8 +179,7 @@
                             </div>
                             <div className="relative w-full px-4 flex items-center justify-center">
                                 <div className="relative z-10 w-full max-w-[320px]">
-                                    {/* [수정 포인트 2] 이미지가 없을 때를 대비한 임시 placeholder 이미지 */}
-                                    {/* 나중에 실제 이미지를 깃허브에 올리고 src="Group 60.png"로 다시 바꾸세요 */}
+                                    {/* 이미지 깨짐 방지용 임시 이미지 (나중에 src="Group 60.png"로 변경하세요) */}
                                     <img src="https://placehold.co/400x400/png?text=Money+Blackbox" alt="Hero" className="w-full h-auto object-contain" />
                                 </div>
                             </div>
