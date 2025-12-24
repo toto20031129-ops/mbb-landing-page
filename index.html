@@ -41,16 +41,11 @@
     <script type="text/babel">
         // 1. 안전한 변수 가져오기
         const { useState, useEffect, useRef } = React;
-        
-        // Framer Motion 안전 로딩
         const MotionLib = window.Motion || window.FramerMotion;
-        if (!MotionLib) console.error("Framer Motion 로딩 실패"); // 에러는 콘솔에만 기록
         const { motion, AnimatePresence, useInView } = MotionLib || { motion: { div: 'div' }, AnimatePresence: ({children})=>children, useInView: ()=>true };
-
-        // Supabase 안전 로딩
         const SupabaseLib = window.supabase || window.Supabase;
         
-        // 2. 앱 설정
+        // 2. 앱 설정 (사용자님의 진짜 키를 제가 넣어뒀습니다)
         const supabaseUrl = 'https://iiuxqifppjuwracdewrn.supabase.co';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpdXhxaWZwcGp1d3JhY2Rld3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1Njk0MTQsImV4cCI6MjA4MjE0NTQxNH0.d53vLqEcBhgsSU19EhkM8D1cs2_ne6UpYQ-xbnU4Zvw';
         const supabaseClient = SupabaseLib ? SupabaseLib.createClient(supabaseUrl, supabaseAnonKey) : null;
@@ -103,11 +98,12 @@
                     return;
                 }
                 if (!supabaseClient) {
-                    alert('데이터베이스 연결에 실패했습니다.');
+                    alert('데이터베이스 연결 라이브러리 로딩 실패');
                     return;
                 }
                 setIsSubmitting(true);
                 try {
+                    // 데이터 전송 시도
                     const { error } = await supabaseClient
                         .from('pre_registrations')
                         .insert([{ 
@@ -116,12 +112,18 @@
                             agreed_to_terms: requiredAgreed,
                             marketing_agreed: marketingAgreed
                         }]);
-                    if (error) throw error;
-                    alert('사전등록이 완료되었습니다.');
+                    
+                    if (error) {
+                        // 🚨 여기가 핵심: 에러 내용을 정확히 보여줍니다 🚨
+                        throw error;
+                    }
+
+                    alert('🎉 사전등록이 완료되었습니다!');
                     setPhoneNumber(''); setEmail(''); setRequiredAgreed(false); setMarketingAgreed(false);
                 } catch (error) {
-                    console.error('Error:', error);
-                    alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                    console.error('Error Details:', error);
+                    // 에러 메시지를 팝업으로 띄웁니다.
+                    alert('⚠️ 오류 발생: ' + (error.message || error.error_description || JSON.stringify(error)));
                 } finally {
                     setIsSubmitting(false);
                 }
@@ -167,7 +169,6 @@
                             </div>
                             <div className="relative w-full px-4 flex items-center justify-center">
                                 <div className="relative z-10 w-full max-w-[320px]">
-                                    {/* 이미지 연결: hero.png */}
                                     <img src="hero.png" alt="Hero" className="w-full h-auto object-contain" />
                                 </div>
                             </div>
@@ -280,4 +281,3 @@
     </script>
 </body>
 </html>
-
