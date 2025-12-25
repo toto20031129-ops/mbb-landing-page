@@ -59,7 +59,7 @@
             const isCountInView = useInView(countRef, { once: true, margin: "-20% 0px" });
 
             useEffect(() => {
-                const targetCount = Math.floor(Math.random() * (250 - 150 + 1)) + 150;
+                const targetCount = 60; // 수동 고정 숫자
                 setRegCount(targetCount);
                 setDisplayCount(targetCount - 50);
             }, []);
