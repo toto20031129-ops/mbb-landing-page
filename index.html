@@ -16,12 +16,13 @@
     <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preload" as="image" href="hero.png">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#0066FF' },
+                    colors: { primary: '#2E8BFF' },
                     fontFamily: { sans: ['Pretendard', 'Nanum Barun Gothic', 'sans-serif'] }
                 }
             }
@@ -31,9 +32,35 @@
         body { font-family: 'Pretendard', 'Nanum Barun Gothic', sans-serif; background-color: #f3f4f6; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 초기 로딩을 위한 스타일 */
+        #root:empty { display: none; }
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        #loading-overlay.fade-out { opacity: 0; pointer-events: none; }
+        .loading-logo {
+            color: white;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-align: center;
+            line-height: 1.4;
+            text-transform: uppercase;
+            font-family: 'Pretendard', sans-serif;
+        }
     </style>
 </head>
 <body>
+    <div id="loading-overlay">
+        <div class="loading-logo">Money<br/>Blackbox</div>
+    </div>
     <div id="root"></div>
 
     <script type="text/babel">
@@ -60,6 +87,13 @@
                 const targetCount = 239;
                 setRegCount(targetCount);
                 setDisplayCount(targetCount - 50);
+
+                // 로딩 오버레이 제거
+                const overlay = document.getElementById('loading-overlay');
+                if (overlay) {
+                    overlay.classList.add('fade-out');
+                    setTimeout(() => overlay.remove(), 500);
+                }
             }, []);
 
             useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
@@ -162,7 +196,7 @@
                             </section>
 
                             <section className="bg-black py-28 px-8">
-                                <h2 className="text-white text-2xl font-bold leading-[1.6] uppercase">Money Blackbox<br/>에서 의심을 지우고<br/><span className="text-primary">신뢰</span>로 기회를 잡으세요</h2>
+                                <h2 className="text-white text-2xl font-bold leading-[1.6] uppercase">Money Blackbox<br/>에서 의심을 지우고<br/><span className="text-[#2E8BFF]">신뢰</span>로 기회를 잡으세요</h2>
                             </section>
 
                             <section className="py-20 px-8 relative overflow-hidden">
@@ -172,30 +206,30 @@
                                 </div>
                                 <div className="relative">
                                     {/* Vertical Line - Adjusted to stop at Step 4 Icon */}
-                                    <div className="absolute left-[27px] top-7 bottom-[130px] w-[2px] bg-[#0066FF] opacity-30 z-0"></div>
+                                    <div className="absolute left-[27px] top-7 bottom-[130px] w-[2px] bg-[#2E8BFF] opacity-30 z-0"></div>
                                     <div className="space-y-16 relative z-10 text-black">
                                         {[
-                                            { icon: 'wallet', title: 'STEP 01. 대금 안전 보관', desc: '구매자는 머니블랙박스에\n거래 금액을 보관해요', sub: '판매자에게 직접 입금하지 않고 시스템에 예치하여\n거래 사기를 근본적으로 차단합니다.' },
-                                            { icon: 'user-check', title: 'STEP 02. 입금 확인 및 발송', desc: '판매자는 입금 여부를 확인하고\n거래를 진행해요', sub: '머니블랙박스에서 입금 완료 알림을 확인한 후,\n판매자는 안심하고 물건 발송이나 서비스를 제공합니다.', banner: '시스템이 24시간 입금 상태를 모니터링 중입니다.' },
-                                            { isThumbs: true, title: 'STEP 03. 상호 성사 동의', desc: '구매자와 판매자는\n거래 성사 여부에 동의해요', sub: '거래가 원만히 완료되었음을 양측이 확인하면,\n머니블랙박스는 최종 정산 단계를 준비합니다.' },
-                                            { isWon: true, title: 'STEP 04. 꼼꼼한 확인과 정산', desc: '성사 여부를 꼼꼼히 확인하고\n정산이 이루어져요', sub: '머니블랙박스가 최종적으로 이상 유무를 검토한 뒤,\n판매자에게 안전하게 대금을 정산합니다.' }
+                                            { icon: 'wallet', title: 'STEP 01. 대금 안전 보관', desc: '구매자는 머니블랙박스에\n거래 금액을 보관해요', sub: '판매자에게 직접 입금하지 않고 시스템에 예치하여 거래 사기를 근본적으로 차단합니다.' },
+                                            { icon: 'user-check', title: 'STEP 02. 입금 확인 및 발송', desc: '판매자는 입금 여부를 확인하고\n거래를 진행해요', sub: '머니블랙박스에서 입금 완료 알림을 확인한 후, 판매자는 안심하고 물건 발송이나 서비스를 제공합니다.', banner: '시스템이 24시간 입금 상태를 모니터링 중입니다.' },
+                                            { isThumbs: true, title: 'STEP 03. 상호 성사 동의', desc: '구매자와 판매자는\n거래 성사 여부에 동의해요', sub: '거래가 원만히 완료되었음을 양측이 확인하면, 머니블랙박스는 최종 정산 단계를 준비합니다.' },
+                                            { isWon: true, title: 'STEP 04. 꼼꼼한 확인과 정산', desc: '성사 여부를 꼼꼼히 확인하고\n정산이 이루어져요', sub: '머니블랙박스가 최종적으로 이상 유무를 검토한 뒤, 판매자에게 안전하게 대금을 정산합니다.' }
                                         ].map((s, i) => (
                                             <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, delay: i * 0.2 }} viewport={{ once: true, margin: "-10% 0px" }} className="flex gap-6">
-                                                <div className="flex-shrink-0 w-14 h-14 bg-white border-2 border-[#0066FF] rounded-2xl flex items-center justify-center shadow-sm">
-                                                    {s.isWon ? <span className="text-2xl font-black text-[#0066FF]">₩</span> : s.isThumbs ? <i data-lucide="thumbs-up" className="w-7 h-7 text-[#0066FF]"></i> : <i data-lucide={s.icon} className="w-7 h-7 text-[#0066FF]"></i>}
+                                                <div className="flex-shrink-0 w-14 h-14 bg-white border-2 border-[#2E8BFF] rounded-2xl flex items-center justify-center shadow-sm">
+                                                    {s.isWon ? <span className="text-2xl font-black text-[#2E8BFF]">₩</span> : s.isThumbs ? <i data-lucide="thumbs-up" className="w-7 h-7 text-[#2E8BFF]"></i> : <i data-lucide={s.icon} className="w-7 h-7 text-[#2E8BFF]"></i>}
                                                 </div>
                                                 <div className="flex flex-col pt-1">
-                                                    <span className="text-[11px] font-bold text-[#0066FF] mb-2 uppercase">{s.title}</span>
+                                                    <span className="text-[11px] font-bold text-[#2E8BFF] mb-2 uppercase">{s.title}</span>
                                                     <h4 className="text-[17px] font-bold mb-3 leading-tight whitespace-pre-wrap">{s.desc}</h4>
-                                                    <p className="text-[13px] text-gray-500 leading-relaxed mb-4 whitespace-pre-wrap">{s.sub}</p>
-                                                    {s.banner && <div className="bg-[#F0F7FF] py-2 px-4 rounded-lg flex items-center gap-2 w-fit"><i data-lucide="shield-check" className="w-4 h-4 text-[#0066FF]"></i><span className="text-[11px] font-bold text-[#0066FF]">{s.banner}</span></div>}
+                                                    <p className="text-[13px] text-gray-500 leading-relaxed mb-4">{s.sub}</p>
+                                                    {s.banner && <div className="bg-[#F0F7FF] py-2 px-4 rounded-lg flex items-center gap-2 w-fit"><i data-lucide="shield-check" className="w-4 h-4 text-[#2E8BFF]"></i><span className="text-[11px] font-bold text-[#2E8BFF]">{s.banner}</span></div>}
                                                 </div>
                                             </motion.div>
                                         ))}
                                     </div>
                                 </div>
                                 <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.5, delay: 0.8 }} viewport={{ once: true, margin: "-10% 0px" }} className="mt-16 text-black text-center">
-                                    <p className="text-sm leading-relaxed text-black">거래 과정에서 문제가 발생하면 합의가 이루어질 때까지<br/>여러분의 소중한 재산은 머니블랙박스가 <span className="text-primary font-bold">안전하게 보호합니다</span></p>
+                                    <p className="text-sm leading-relaxed text-black">거래 과정에서 문제가 발생하면<br/>합의가 이루어질 때까지 여러분의 소중한 재산은<br/>머니블랙박스가 <span className="text-primary font-bold">안전하게 보호합니다</span></p>
                                 </motion.div>
                             </section>
 
@@ -209,7 +243,7 @@
                             </section>
 
                             <section className="bg-black py-28 text-center px-8">
-                                <h3 className="text-2xl font-bold leading-[1.6] text-white">머니블랙박스를 통해<br/>거래의 <span className="text-primary">신뢰</span>를 확보하세요</h3>
+                                <h3 className="text-2xl font-bold leading-[1.6] text-white">머니블랙박스를 통해<br/>거래의 <span className="text-[#2E8BFF]">신뢰</span>를 확보하세요</h3>
                             </section>
 
                             <section className="py-20 px-8 border-t border-gray-100 text-black">
